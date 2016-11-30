@@ -1,0 +1,80 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pgfcache}
+
+\RequirePackage{pgf}
+\RequirePackage{standalone}
+
+\edef\@figdir{_pgfcache}
+
+\catcode`\#=11
+\catcode`\|=6
+\newcommand{\@basicpgfpreamble}[1]{%
+	\unexpanded{%
+		\documentclass{standalone}^^J
+		\usepackage{pgf}^^J
+		\let\oldpgfimage\pgfimage^^J
+		\renewcommand{\pgfimage}[2][]{\oldpgfimage[#1]{|1/#2}}^^J
+	}%
+}
+\catcode`\#=6
+\catcode`\|=12
+
+\let\@pgfpreamble\@basicpgfpreamble
+
+\newcommand{\setpgfpreamble}[1]{%
+	\renewcommand{\@pgfpreamble}[1]{\@basicpgfpreamble{##1}\unexpanded{#1}}
+}
+
+\newcounter{@pgfcounter}
+\newwrite\@pgfout
+\newread\@pgfin
+
+\newcommand{\importpgf}[3][]{%
+	\IfFileExists{#2/#3}{}{\errmessage{importpgf: File #2/#3 not found}}%
+	\edef\@figfile{\jobname-\the@pgfcounter}%
+	\providecommand{\@writetempfile}{}%
+	\renewcommand{\@writetempfile}[1]%
+	{%
+		\immediate\openout\@pgfout=##1%
+		\immediate\write\@pgfout{\@pgfpreamble{#2}}%
+		\immediate\write\@pgfout{\string\begin{document}}%
+		\immediate\openin\@pgfin=#2/#3%
+		\begingroup\endlinechar=-1%
+			\loop\unless\ifeof\@pgfin%
+				\readline\@pgfin to \@fileline%
+				\ifx\@fileline\@empty\else%
+					\immediate\write\@pgfout{\@fileline}%
+				\fi%
+			\repeat%
+		\endgroup%
+		\immediate\closein\@pgfin%
+		\immediate\write\@pgfout{\string\end{document}}%
+		\immediate\closeout\@pgfout%
+	}%
+	\def\@compile%
+	{%
+		\immediate\write18{pdflatex -interaction=batchmode -output-directory="\@figdir" \@figdir/\@figfile.tex}%
+	}%
+	\IfFileExists{\@figdir/\@figfile.pdf}%
+	{%
+		\@writetempfile{\@figdir/tmp.tex}%
+		\edef\@hashold{\pdfmdfivesum file {\@figdir/\@figfile.tex}}%
+		\edef\@hashnew{\pdfmdfivesum file {\@figdir/tmp.tex}}%
+		\ifnum\pdfstrcmp{\@hashold}{\@hashnew}=0%
+			\relax%
+		\else%
+			\@writetempfile{\@figdir/\@figfile.tex}%
+			\@compile%
+		\fi%
+	}%
+	{%
+		\@writetempfile{\@figdir/\@figfile.tex}%
+		\@compile%
+	}%
+	\IfFileExists{\@figdir/\@figfile.pdf}%
+	{\includegraphics[#1]{\@figdir/\@figfile.pdf}}%
+	{\errmessage{Error during compilation of figure #2/#3}}%
+	\stepcounter{@pgfcounter}%
+}
+
+\endinput
