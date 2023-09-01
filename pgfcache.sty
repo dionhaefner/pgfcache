@@ -57,7 +57,7 @@
 	}%
 	\def\@compile%
 	{%
-		\immediate\write18{pdflatex -output-directory="\@outputdir\@figdir" \@outputdir\@figdir/\@figfile.tex}%
+		\immediate\write18{pdflatex -interaction=batchmode -output-directory="\@outputdir\@figdir" \@outputdir\@figdir/\@figfile.tex}%
 	}%
 	\IfFileExists{\@figdir/\@figfile.pdf}%
 	{%
