@@ -6,7 +6,7 @@
 \RequirePackage{standalone}
 
 \edef\@figdir{_pgfcache}
-
+\edef\@outputdir{}
 \catcode`\#=11
 \catcode`\|=6
 \newcommand{\@basicpgfpreamble}[1]{%
@@ -24,6 +24,9 @@
 
 \newcommand{\setpgfpreamble}[1]{%
 	\renewcommand{\@pgfpreamble}[1]{\@basicpgfpreamble{##1}\unexpanded{#1}}
+}
+\newcommand{\setoutputdir}[1]{%
+	\edef\@outputdir{#1/}
 }
 
 \newcounter{@pgfcounter}
@@ -54,7 +57,7 @@
 	}%
 	\def\@compile%
 	{%
-		\immediate\write18{pdflatex -interaction=batchmode -output-directory="\@figdir" \@figdir/\@figfile.tex}%
+		\immediate\write18{pdflatex -output-directory="\@outputdir\@figdir" \@outputdir\@figdir/\@figfile.tex}%
 	}%
 	\IfFileExists{\@figdir/\@figfile.pdf}%
 	{%
