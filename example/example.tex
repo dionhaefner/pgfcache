@@ -1,0 +1,12 @@
+\documentclass{article}
+
+% Outdir must be the same as --output-directory
+\usepackage[outdir=out]{pgfcache}
+
+\setpgfpreamble{%
+  \usepackage{amsmath}
+}
+
+\begin{document}
+	\importpgf{figures}{example.pgf}
+\end{document}

@@ -4,8 +4,14 @@
 \RequirePackage{graphicx}
 \RequirePackage{pgf}
 \RequirePackage{standalone}
+\RequirePackage{xkeyval}
 
 \edef\@figdir{_pgfcache}
+\edef\@outdir{}
+
+\DeclareOptionX{outdir}{\edef\@outdir{#1/}}
+\DeclareOptionX*{\PackageWarning{pgfcache}{`\CurrentOption' ignored}}
+\ProcessOptionsX\relax
 
 \catcode`\#=11
 \catcode`\|=6
@@ -54,7 +60,7 @@
 	}%
 	\def\@compile%
 	{%
-		\immediate\write18{pdflatex -interaction=batchmode -output-directory="\@figdir" \@figdir/\@figfile.tex}%
+		\immediate\write18{pdflatex -interaction=batchmode -output-directory="\@outdir\@figdir" \@outdir\@figdir/\@figfile.tex}%
 	}%
 	\IfFileExists{\@figdir/\@figfile.pdf}%
 	{%
