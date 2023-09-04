@@ -31,7 +31,7 @@ pdflatex -synctex=1 -shell-escape -interaction=nonstopmode "yourfile".tex
 
 You will also have to create a folder called `_pgfcache` in the parent folder of your TeX document. This is where all the pre-compiled figures will go.
 
-If you specify an output directory (by adding `-output-directory=<output>` to the `pdflatex` command above), you should create the `_pgfcache` folder in that output directory. Additionally, you have to add `\setoutputdir{<output>}` to the preamble of your LaTeX document.
+If you specify an output directory (by adding `-output-directory=<output>` to the `pdflatex` command above), you should create the `_pgfcache` folder in that output directory. Additionally, you have to add `\usepackage[outdir=<output-dir>]{pgfcache}` to the preamble of your LaTeX document (see [example](example/example.tex)).
 
 ## Troubleshooting
 
